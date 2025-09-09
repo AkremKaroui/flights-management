@@ -22,21 +22,26 @@ public class User {
     private Long id;
 
     private String name;
+
     @Column(unique = true)
     private String email;
+
     private String phoneNumber;
+
+    // For local authentication
     private String password;
     private boolean emailVerified;
 
-    //FOR OATH2
+    // For OAuth authentication
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private AuthMethod provider;
 
-    private String providerId;
+    private String providerId; // ID from OAuth provider
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_roles",
+    @JoinTable(
+            name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
@@ -44,7 +49,7 @@ public class User {
 
     private boolean active;
 
-    @OneToMany
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Booking> bookings = new ArrayList<>();
 
     @Column(updatable = false)

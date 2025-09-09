@@ -1,5 +1,6 @@
 package com.pm.flightsmanagement.dtos;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,5 +11,7 @@ import lombok.NoArgsConstructor;
 public class RoleDTO {
 
     private Long id;
+
+    @NotBlank(message = "Name is required")
     private String name;
 }

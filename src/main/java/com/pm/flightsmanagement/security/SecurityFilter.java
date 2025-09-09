@@ -23,29 +23,32 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityFilter {
-
     private final AuthFilter authFilter;
     private final CustomAccessDenialHandler customAccessDenialHandler;
-    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable) //to disable _csrf
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+
+        httpSecurity.csrf(AbstractHttpConfigurer::disable) //to disable _csrf
                 .cors(Customizer.withDefaults())
-                .exceptionHandling(ex->
+                .exceptionHandling(ex ->
                         ex.accessDeniedHandler(customAccessDenialHandler)
                                 .authenticationEntryPoint(customAuthenticationEntryPoint))
-                .authorizeHttpRequests(req->
-                        req.requestMatchers("/api/auth/**", "/api/airports/**", "/api/flights/**").permitAll()
+                .authorizeHttpRequests(req ->
+                        req.requestMatchers("/api/auth/**", "/api/airports/**",
+                                        "/api/flights/**").permitAll()
                                 .anyRequest().authenticated())
-                .sessionManagement(mag-> mag.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(mag -> mag.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
+        return httpSecurity.build();
+
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -54,3 +57,11 @@ public class SecurityFilter {
         return authenticationConfiguration.getAuthenticationManager();
     }
 }
+
+
+
+
+
+
+
+

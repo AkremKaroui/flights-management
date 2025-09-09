@@ -29,6 +29,6 @@ public class Airport {
     @Enumerated(EnumType.STRING)
     private Country country;
 
-    @Column(nullable = false, unique = true, length = 3)
+    @Column(unique = true, nullable = false, length = 3)
     private String iataCode;
 }

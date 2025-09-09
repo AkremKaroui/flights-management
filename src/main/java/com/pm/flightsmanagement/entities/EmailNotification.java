@@ -1,5 +1,6 @@
 package com.pm.flightsmanagement.entities;
 
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

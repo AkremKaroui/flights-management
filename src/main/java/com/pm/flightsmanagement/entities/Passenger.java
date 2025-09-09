@@ -28,5 +28,5 @@ public class Passenger {
     private PassengerType type;
 
     private String seatNumber;
-    private String specialRequest;
+    private String specialRequests;
 }

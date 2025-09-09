@@ -16,19 +16,21 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
+
     private final ObjectMapper objectMapper;
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response,
-                         AuthenticationException authException) throws IOException,
-            ServletException {
+    public void commence(HttpServletRequest request,
+                         HttpServletResponse response,
+                         AuthenticationException authException)
+            throws IOException, ServletException {
 
         Response<?> errorResponse = Response.builder()
-                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .statusCode(HttpStatus.UNAUTHORIZED.value()) //401 error
                 .message(authException.getMessage())
                 .build();
 
-        response.setContentType("Application/json");
+        response.setContentType("application/json");
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
 

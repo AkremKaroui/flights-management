@@ -25,7 +25,7 @@ public class Flight {
     @Column(unique = true, nullable = false)
     private String flightNumber;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private FlightStatus status;
 
     @ManyToOne
@@ -38,14 +38,11 @@ public class Flight {
 
     private LocalDateTime departureTime;
     private LocalDateTime arrivalTime;
-
     private BigDecimal basePrice;
 
     @ManyToOne
-    private User pilot;
+    private User assignedPilot;
 
     @OneToMany(mappedBy = "flight")
     private List<Booking> bookings = new ArrayList<>();
-
-
 }
