@@ -1,5 +1,8 @@
 package com.pm.flightsmanagement.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum City {
 
     TUNIS(Country.TUNISIA),
@@ -13,6 +16,10 @@ public enum City {
     LONDON(Country.UK),
     BERLIN(Country.GERMANY);
 
+    private final Country country;
+
     City(Country country) {
+        this.country = country;
     }
+
 }

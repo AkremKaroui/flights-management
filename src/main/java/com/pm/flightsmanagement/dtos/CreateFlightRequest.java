@@ -34,9 +34,12 @@ public class CreateFlightRequest {
     @NotNull(message = "Departure Time cannot be null")
     private LocalDateTime departureTime;
 
+    @NotNull(message = "Departure Time cannot be null")
+    private LocalDateTime arrivalTime;
+
     @NotNull(message = "Base price cannot be null")
     @Positive(message = "Base price must be positive")
     private BigDecimal basePrice;
 
-    private long pilotId;
+    private Long pilotId;
 }

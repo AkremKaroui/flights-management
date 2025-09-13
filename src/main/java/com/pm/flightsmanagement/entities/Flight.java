@@ -3,6 +3,7 @@ package com.pm.flightsmanagement.entities;
 import com.pm.flightsmanagement.enums.FlightStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @Table(name = "flights")
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Flight {
 
     @Id

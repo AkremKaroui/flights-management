@@ -18,12 +18,12 @@ public class AirportDTO {
     @NotBlank(message = "name is required")
     private String name;
 
-    @NotNull(message = "name is required")
+    @NotNull(message = "city is required")
     private City city;
 
-    @NotNull(message = "name is required")
+    @NotNull(message = "country is required")
     private Country country;
 
-    @NotNull(message = "name is required")
+    @NotNull(message = "iataCode is required")
     private String iataCode;
 }

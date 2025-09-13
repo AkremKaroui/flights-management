@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Welcome to Phegon Airline!</title>
+    <title>Welcome to Management Airline!</title>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -93,7 +93,7 @@
     <div class="content">
         <p class="greeting">Hello <strong th:text="${userName}">[User Name]</strong>,</p>
 
-        <p>Thank you for registering with Phegon Airline! We are thrilled to have you join our
+        <p>Thank you for registering with Airline management! We are thrilled to have you join our
             community.</p>
 
         <p>You can now explore our wide range of flights, manage your bookings, and enjoy exclusive
@@ -111,10 +111,8 @@
     </div>
     <div class="footer">
         Best regards,<br>
-        Phegon Airline Team<br>
-        <a href="[frontendLoginUrl]" style="color: #007bff; text-decoration: none;">www.phegonairline.com</a><br>
-        &copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> Phegon
-        Airline. All rights
+        &copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span>
+        Airline Management. All rights
         reserved.
     </div>
 </div>
