@@ -39,21 +39,21 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public Response<?> createFlight(CreateFlightRequest createFlightRequest) {
-        if (createFlightRequest.getDepartureTime().isAfter(createFlightRequest.getArrivalTime())){
+        if (createFlightRequest.getDepartureTime().isAfter(createFlightRequest.getArrivalTime())) {
             throw new BadRequestException("Arrival time cannot be before departure time");
         }
-        if (flightRepo.existsByFlightNumber(createFlightRequest.getFlightNumber())){
+        if (flightRepo.existsByFlightNumber(createFlightRequest.getFlightNumber())) {
             throw new BadRequestException("Flight number already exists");
         }
 
         Airport departureAirport =
                 airportRepo.findByIataCode(createFlightRequest.getDepartureAirportIataCode())
-                        .orElseThrow(()-> new NotFoundException("Departure airport doesn't " +
+                        .orElseThrow(() -> new NotFoundException("Departure airport doesn't " +
                                 "exists"));
 
         Airport arrivalAirport =
-                airportRepo.findByIataCode(createFlightRequest.getDepartureAirportIataCode())
-                        .orElseThrow(()-> new NotFoundException("Arrival airport doesn't " +
+                airportRepo.findByIataCode(createFlightRequest.getArrivalAirportIataCode())
+                        .orElseThrow(() -> new NotFoundException("Arrival airport doesn't " +
                                 "exists"));
 
         User pilot = getPilotByUserId(createFlightRequest);
@@ -85,12 +85,12 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public Response<FlightDTO> getFlightById(Long id) {
         Flight flight = flightRepo.findById(id)
-                .orElseThrow(()-> new NotFoundException("Flight doesn't exists"));
+                .orElseThrow(() -> new NotFoundException("Flight doesn't exists"));
         FlightDTO flightDTO = modelMapper.map(flight, FlightDTO.class);
-        if (flightDTO.getBookings() != null){
+        if (flightDTO.getBookings() != null) {
             flightDTO.getBookings().forEach(bookingDTO -> bookingDTO.setFlight(null));
         }
-        return Response.<FlightDTO> builder()
+        return Response.<FlightDTO>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Flight Info")
                 .data(flightDTO)
@@ -100,10 +100,10 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public Response<List<FlightDTO>> getAllFlights() {
         Sort sortIdAsc = Sort.by(Sort.Direction.ASC, "id");
-        List<FlightDTO> flights = flightRepo.findAll().stream()
+        List<FlightDTO> flights = flightRepo.findAll(sortIdAsc).stream()
                 .map(flight -> {
                             FlightDTO flightDTO = modelMapper.map(flight, FlightDTO.class);
-                            if (flightDTO.getBookings() != null){
+                            if (flightDTO.getBookings() != null) {
                                 flightDTO.getBookings().forEach(bookingDTO -> bookingDTO.setFlight(null));
                             }
                             return flightDTO;
@@ -111,7 +111,7 @@ public class FlightServiceImpl implements FlightService {
                 )
                 .toList();
 
-        return Response.<List<FlightDTO>> builder()
+        return Response.<List<FlightDTO>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("List of flights registered")
                 .data(flights)
@@ -129,24 +129,26 @@ public class FlightServiceImpl implements FlightService {
         LocalDateTime updateArrivalTime = createFlightRequest.getArrivalTime();
 
         //Check dates and validate order and assign them to flight
-        if (updatedDepartureTime != null || updateArrivalTime != null){
-            if (updatedDepartureTime != null && updateArrivalTime != null){
+        if (updatedDepartureTime != null || updateArrivalTime != null) {
+            if (updatedDepartureTime != null && updateArrivalTime != null) {
                 if (updatedDepartureTime.isAfter(updateArrivalTime)) {
                     throw new BadRequestException("Arrival time cannot be before departure time");
-                }else {
+                } else {
                     flight.setDepartureTime(updatedDepartureTime);
                     flight.setArrivalTime(updateArrivalTime);
                 }
-            }else {
+            } else {
                 if (updatedDepartureTime != null) {
                     if (updatedDepartureTime.isAfter(flight.getArrivalTime())) {
-                        throw new BadRequestException("Arrival time cannot be before departure time");
+                        throw new BadRequestException("Arrival time cannot be before departure " +
+                                "time");
                     } else {
                         flight.setDepartureTime(updatedDepartureTime);
                     }
                 } else {
                     if (flight.getDepartureTime().isAfter(updateArrivalTime)) {
-                        throw new BadRequestException("Arrival time cannot be before departure time");
+                        throw new BadRequestException("Arrival time cannot be before departure " +
+                                "time");
                     } else {
                         flight.setArrivalTime(updateArrivalTime);
                     }
@@ -155,10 +157,10 @@ public class FlightServiceImpl implements FlightService {
         }
         // END
 
-        if (createFlightRequest.getBasePrice() != null){
+        if (createFlightRequest.getBasePrice() != null) {
             flight.setBasePrice(createFlightRequest.getBasePrice());
         }
-        if (createFlightRequest.getFlightStatus() != null){
+        if (createFlightRequest.getFlightStatus() != null) {
             flight.setStatus(createFlightRequest.getFlightStatus());
         }
 
@@ -176,14 +178,17 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public Response<List<FlightDTO>> searchFlight(String departureAirportIata, String arrivalAiportIata,
-                                    FlightStatus flightStatus, LocalDate departureDate) {
+    public Response<List<FlightDTO>> searchFlight(String departureAirportIata,
+                                                  String arrivalAiportIata,
+                                                  FlightStatus flightStatus,
+                                                  LocalDate departureDate) {
         LocalDateTime startOfDay = departureDate.atStartOfDay();
         LocalDateTime endOfDay = departureDate.plusDays(1).atStartOfDay().minusNanos(1);
 
         List<Flight> flights =
                 flightRepo.findByDepartureAirportIataCodeAndArrivalAirportIataCodeAndStatusAndDepartureTimeBetween
-                        (departureAirportIata, arrivalAiportIata, flightStatus, startOfDay, endOfDay);
+                        (departureAirportIata, arrivalAiportIata, flightStatus, startOfDay,
+                                endOfDay);
 
         List<FlightDTO> flightDTOS = flights.stream()
                 .map(flight -> {
@@ -194,7 +199,7 @@ public class FlightServiceImpl implements FlightService {
                 })
                 .toList();
 
-        return Response.<List<FlightDTO>> builder()
+        return Response.<List<FlightDTO>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("List of flights on " + departureDate)
                 .data(flightDTOS)
@@ -203,7 +208,7 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public Response<List<City>> getAllCities() {
-        return Response.<List<City>> builder()
+        return Response.<List<City>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("List of cities")
                 .data(List.of(City.values()))
@@ -212,7 +217,7 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public Response<List<Country>> getAllCountries() {
-        return Response.<List<Country>> builder()
+        return Response.<List<Country>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("List of countries")
                 .data(List.of(Country.values()))
@@ -221,11 +226,12 @@ public class FlightServiceImpl implements FlightService {
 
     private User getPilotByUserId(CreateFlightRequest createFlightRequest) {
         User pilot = null;
-        if (createFlightRequest.getPilotId() != null){
+        if (createFlightRequest.getPilotId() != null) {
             pilot =
                     userRepo.findById(createFlightRequest.getPilotId())
-                            .orElseThrow(()-> new NotFoundException("Pilot doesn't exists"));
-            boolean isPilot = pilot.getRoles().stream().anyMatch(role -> role.getName().equalsIgnoreCase(
+                            .orElseThrow(() -> new NotFoundException("Pilot doesn't exists"));
+            boolean isPilot =
+                    pilot.getRoles().stream().anyMatch(role -> role.getName().equalsIgnoreCase(
                     "PILOT"));
             if (!isPilot) {
                 throw new BadRequestException("Pilot is not registered");

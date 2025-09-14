@@ -82,7 +82,7 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
         log.info("Sending welcome email to user: {}", user.getEmail());
 
         String recipientEmail = user.getEmail();
-        String subject = "Welcome to Phegon Airline!";
+        String subject = "Welcome to Airline Management!";
         String templateName = "welcome_user"; // Hardcoded template name for internal use
 
         Map<String, Object> templateVariables = new HashMap<>();
